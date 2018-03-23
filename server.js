@@ -81,7 +81,7 @@ app.post("/api/remittances", function(req, res) {
  */
 
 app.get("/api/remittances/:temple", function(req, res) {
-  db.collection(REMITTANCE_COLLECTION).findOne({ Temple: new ObjectID(req.params.temple) }, function(err, doc) {
+  db.collection(REMITTANCE_COLLECTION).find({ Temple: req.params.temple}, function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to get temple");
     } else {
@@ -90,25 +90,25 @@ app.get("/api/remittances/:temple", function(req, res) {
   });
 });
 
-app.get("/api/remittances/:gbc", function(req, res) {
-    db.collection(REMITTANCE_COLLECTION).findOne({ Temple: new ObjectID(req.params.temple) }, function(err, doc) {
-      if (err) {
-        handleError(res, err.message, "Failed to get temple");
-      } else {
-        res.status(200).json(doc);
-      }
-    });
-});
+// app.get("/api/remittances/:gbc", function(req, res) {
+//     db.collection(REMITTANCE_COLLECTION).find({ GBC: new ObjectID(req.params.gbc) }, function(err, doc) {
+//       if (err) {
+//         handleError(res, err.message, "Failed to get temple");
+//       } else {
+//         res.status(200).json(doc);
+//       }
+//     });
+// });
 
-app.get("/api/remittances/:year/:month", function(req, res) {
-    db.collection(REMITTANCE_COLLECTION).findOne({ Year: new ObjectID(req.params.year) }, function(err, doc) {
-      if (err) {
-        handleError(res, err.message, "Failed to get temple");
-      } else {
-        res.status(200).json(doc);
-      }
-    });
-});
+// app.get("/api/remittances/:year/:month", function(req, res) {
+//     db.collection(REMITTANCE_COLLECTION).find({ Year: req.params.year, Month: req.params.month }, function(err, doc) {
+//       if (err) {
+//         handleError(res, err.message, "Failed to get temple");
+//       } else {
+//         res.status(200).json(doc);
+//       }
+//     });
+// });
 
 
 
