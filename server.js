@@ -37,14 +37,8 @@ function handleError(res, reason, message, code) {
   res.status(code || 500).json({"error": message});
 }
 
-function validateInput(r){
-    return!!r.Temple && !!r.GBC && !!r.Remittance && !!r.Month && !!r.Year; 
-}
 
-/*  "/api/contacts"
- *    GET: finds all contacts
- *    POST: creates a new contact
- */
+
 
 app.get("/api/remittances", function(req, res) {
   db.collection(REMITTANCE_COLLECTION).find({}).toArray(function(err, docs) {
@@ -56,7 +50,14 @@ app.get("/api/remittances", function(req, res) {
   });
 });
 
+/*
 // THIS IS A TEST ROUTE THAT SHOULD NOT BE EXPOSED
+
+function validateInput(r){
+    return!!r.Temple && !!r.GBC && !!r.Remittance && !!r.Month && !!r.Year; 
+}
+
+
 app.post("/api/remittances", function(req, res) {
   var newContact = req.body;
   newContact.createDate = new Date();
@@ -73,15 +74,10 @@ app.post("/api/remittances", function(req, res) {
     }
   });
 });
+**/
 
-/*  "/api/contacts/:id"
- *    GET: find contact by id
- *    PUT: update contact by id
- *    DELETE: deletes contact by id
- */
-
-app.get("/api/remittances/:temple", function(req, res) {
-  db.collection(REMITTANCE_COLLECTION).find({ Temple: req.params.temple}, function(err, doc) {
+app.get("/api/remittances/temple/:temple", function(req, res) {
+  db.collection(REMITTANCE_COLLECTION).find({ "Temple": req.params.temple}).toArray(function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to get temple");
     } else {
@@ -90,48 +86,22 @@ app.get("/api/remittances/:temple", function(req, res) {
   });
 });
 
-// app.get("/api/remittances/:gbc", function(req, res) {
-//     db.collection(REMITTANCE_COLLECTION).find({ GBC: new ObjectID(req.params.gbc) }, function(err, doc) {
-//       if (err) {
-//         handleError(res, err.message, "Failed to get temple");
-//       } else {
-//         res.status(200).json(doc);
-//       }
-//     });
-// });
+app.get("/api/remittances/gbc/:gbc", function(req, res) {
+    db.collection(REMITTANCE_COLLECTION).find({ "GBC": req.params.gbc}).toArray(function(err, doc) {
+      if (err) {
+        handleError(res, err.message, "Failed to get GBC");
+      } else {
+        res.status(200).json(doc);
+      }
+    });
+  });
 
-// app.get("/api/remittances/:year/:month", function(req, res) {
-//     db.collection(REMITTANCE_COLLECTION).find({ Year: req.params.year, Month: req.params.month }, function(err, doc) {
-//       if (err) {
-//         handleError(res, err.message, "Failed to get temple");
-//       } else {
-//         res.status(200).json(doc);
-//       }
-//     });
-// });
-
-
-
-// app.put("/api/contacts/:id", function(req, res) {
-//   var updateDoc = req.body;
-//   delete updateDoc._id;
-
-//   db.collection(REMITTANCE_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
-//     if (err) {
-//       handleError(res, err.message, "Failed to update contact");
-//     } else {
-//       updateDoc._id = req.params.id;
-//       res.status(200).json(updateDoc);
-//     }
-//   });
-// });
-
-// app.delete("/api/contacts/:id", function(req, res) {
-//   db.collection(REMITTANCE_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
-//     if (err) {
-//       handleError(res, err.message, "Failed to delete contact");
-//     } else {
-//       res.status(200).json(req.params.id);
-//     }
-//   });
-// });
+  app.get("/api/remittances/:year/:month", function(req, res) {
+    db.collection(REMITTANCE_COLLECTION).find({ "Year": parseInt(req.params.year), "Month": req.params.month}).toArray(function(err, doc) {
+      if (err) {
+        handleError(res, err.message, "Failed to get monthly data");
+      } else {
+        res.status(200).json(doc);
+      }
+    });
+  });
