@@ -105,3 +105,15 @@ app.get("/api/remittances/gbc/:gbc", function(req, res) {
       }
     });
   });
+
+  app.get("/api/remittances/:year/:month/:temple", function(req, res){
+    db.collection(REMITTANCE_COLLECTION)
+    .find({"Temple": req.params.temple, "Month": req.params.month, "Year": parseInt(req.params.year)})
+    .toArray(function(err, doc){
+      if (err) {
+        handleError(res, err.message, "Failed to get monthly data");
+      } else {
+        res.status(200).json(doc);
+      }
+    });
+  });
