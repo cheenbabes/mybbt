@@ -112,3 +112,60 @@ app.delete("/api/contacts/:id", function(req, res) {
     }
   });
 });
+
+
+//ACTUAL SERVER.JS CODE ==== THESE ARE THE REAL ROUTES FOR THE APP
+
+
+var REMITTANCE_COLLECTION = "remittance";
+app.get("/api/remittances", function(req, res) {
+  db.collection(REMITTANCE_COLLECTION).find({}).toArray(function(err, docs) {
+    if (err) {
+      handleError(res, err.message, "Failed to get remittance.");
+    } else {
+      res.status(200).json(docs);
+    }
+  });
+});
+
+app.get("/api/remittances/temple/:temple", function(req, res) {
+  db.collection(REMITTANCE_COLLECTION).find({ "Temple": req.params.temple}).toArray(function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to get temple");
+    } else {
+      res.status(200).json(doc);
+    }
+  });
+});
+
+app.get("/api/remittances/gbc/:gbc", function(req, res) {
+    db.collection(REMITTANCE_COLLECTION).find({ "GBC": req.params.gbc}).toArray(function(err, doc) {
+      if (err) {
+        handleError(res, err.message, "Failed to get GBC");
+      } else {
+        res.status(200).json(doc);
+      }
+    });
+  });
+
+  app.get("/api/remittances/:year/:month", function(req, res) {
+    db.collection(REMITTANCE_COLLECTION).find({ "Year": parseInt(req.params.year), "Month": req.params.month}).toArray(function(err, doc) {
+      if (err) {
+        handleError(res, err.message, "Failed to get monthly data");
+      } else {
+        res.status(200).json(doc);
+      }
+    });
+  });
+
+  app.get("/api/remittances/:year/:month/:temple", function(req, res){
+    db.collection(REMITTANCE_COLLECTION)
+    .find({"Temple": req.params.temple, "Month": req.params.month, "Year": parseInt(req.params.year)})
+    .toArray(function(err, doc){
+      if (err) {
+        handleError(res, err.message, "Failed to get monthly data");
+      } else {
+        res.status(200).json(doc);
+      }
+    });
+  });
