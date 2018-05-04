@@ -1,4 +1,6 @@
 var express = require("express");
+var moment = require("moment");
+moment().format();
 var bodyParser = require("body-parser");
 var mongodb = require("mongodb");
 var ObjectID = mongodb.ObjectID;
@@ -143,7 +145,16 @@ app.get("/api/remittances/gbc/:gbc", function(req, res) {
       if (err) {
         handleError(res, err.message, "Failed to get GBC");
       } else {
-        res.status(200).json(doc);
+        if(req.query.sum === "true"){
+          let total = doc.map((record) => {
+            return record.Remittance;
+          }).reduce((a,b) => {
+            return a + b;
+          }, 0);
+          res.status(200).json(total);
+        }else{
+          res.status(200).json(doc);
+        }
       }
     });
   });
@@ -153,7 +164,16 @@ app.get("/api/remittances/gbc/:gbc", function(req, res) {
       if (err) {
         handleError(res, err.message, "Failed to get monthly data");
       } else {
-        res.status(200).json(doc);
+        if(req.query.sum === "true"){
+          let total = doc.map((record) => {
+            return record.Remittance;
+          }).reduce((a,b) => {
+            return a + b;
+          }, 0);
+          res.status(200).json(total);
+        }else{
+          res.status(200).json(doc);
+        }
       }
     });
   });
@@ -165,7 +185,68 @@ app.get("/api/remittances/gbc/:gbc", function(req, res) {
       if (err) {
         handleError(res, err.message, "Failed to get monthly data");
       } else {
-        res.status(200).json(doc);
+        if(req.query.sum === "true"){
+          let total = doc.map((record) => {
+            return record.Remittance;
+          }).reduce((a,b) => {
+            return a + b;
+          }, 0);
+          res.status(200).json(total);
+        }else{
+          res.status(200).json(doc);
+        }
       }
     });
+  });
+
+
+  app.get("/api/remittances/history", function(req, res){
+    if(!req.query.months || isNaN(req.query.months)){
+      handleError(res, "No month lookback supplied or not a number", "Failed to get historical data");
+    }
+
+    let startDate = moment().startOf('month').subtract(req.query.months, 'months');
+    let filteredByDate;
+    let final;
+    let ret = {};
+
+    //Simplify to call the API only once, then filter here on the server
+    db.collection(REMITTANCE_COLLECTION).find({}).toArray(function(err, doc){
+      if(err){
+        handleError(res, err.message, "Failed to get all the data from the db");
+      }else{
+          filteredByDate = doc.filter(record => {
+          let recordDate = moment().year(record.Year).month(record.Month);
+          return recordDate.isAfter(startDate);
+        });
+      }
+      if(req.query.location && req.query.location !== ""){
+          final = filteredByDate.filter(record =>{
+          return record.Temple === req.query.location;
+        });
+        ret.data = final;
+      }else{
+        ret.data = filteredByDate;
+      }
+
+      let total = ret.data.map(record => {
+        return record.Remittance;
+      }).reduce((a,b) => {
+        return a+b;
+      }, 0)
+
+      ret.sum = total;
+      res.status(200).json(ret);
+    });
+  });
+
+  
+  app.get("/api", function(req, res){
+    let ret =[];
+    app._router.stack.forEach(function(r){
+      if (r.route && r.route.path){
+        ret.push(r.route.path);
+      }
+    });
+    res.status(200).json(ret);
   });
