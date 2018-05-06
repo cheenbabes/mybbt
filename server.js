@@ -150,6 +150,22 @@ app.get("/api/remittances/temple/:temple", function(req, res) {
   });
 });
 
+app.get("/api/remittances/year/:year/:temple", function(req, res){
+  db.collection(REMITTANCE_COLLECTION)
+  .find({"Temple": req.params.temple, "Year": parseInt(req.params.year)})
+  .toArray(function(err, doc){
+    if (err) {
+      handleError(res, err.message, "Failed to get monthly data");
+    } else {
+      return res.status(200).json({
+        data: doc,
+        sum: getSum(doc),
+        max: Math.max(...doc.map(o => o.Remittance))
+      });
+    }
+  });
+});
+
 app.get("/api/remittances/gbc/:gbc", function(req, res) {
     db.collection(REMITTANCE_COLLECTION).find({ "GBC": req.params.gbc}).toArray(function(err, doc) {
       if (err) {
