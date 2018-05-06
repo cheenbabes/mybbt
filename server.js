@@ -117,7 +117,13 @@ app.delete("/api/contacts/:id", function(req, res) {
 
 
 //ACTUAL SERVER.JS CODE ==== THESE ARE THE REAL ROUTES FOR THE APP
-
+function getSum(array){
+  return array.map((record) => {
+    return record.Remittance;
+  }).reduce((a,b) => {
+    return a + b;
+  }, 0);
+}
 
 var REMITTANCE_COLLECTION = "remittance";
 app.get("/api/remittances", function(req, res) {
@@ -135,7 +141,11 @@ app.get("/api/remittances/temple/:temple", function(req, res) {
     if (err) {
       handleError(res, err.message, "Failed to get temple");
     } else {
-      res.status(200).json(doc);
+      return res.status(200).json({
+        data: doc,
+        sum: getSum(doc),
+        max: Math.max(...doc.map(o => o.Remittance))
+      });
     }
   });
 });
@@ -145,16 +155,11 @@ app.get("/api/remittances/gbc/:gbc", function(req, res) {
       if (err) {
         handleError(res, err.message, "Failed to get GBC");
       } else {
-        if(req.query.sum === "true"){
-          let total = doc.map((record) => {
-            return record.Remittance;
-          }).reduce((a,b) => {
-            return a + b;
-          }, 0);
-          res.status(200).json(total);
-        }else{
-          res.status(200).json(doc);
-        }
+        return res.status(200).json({
+          data: doc,
+          sum: getSum(doc),
+          max: Math.max(...doc.map(o => o.Remittance))
+        });
       }
     });
   });
@@ -164,16 +169,11 @@ app.get("/api/remittances/gbc/:gbc", function(req, res) {
       if (err) {
         handleError(res, err.message, "Failed to get monthly data");
       } else {
-        if(req.query.sum === "true"){
-          let total = doc.map((record) => {
-            return record.Remittance;
-          }).reduce((a,b) => {
-            return a + b;
-          }, 0);
-          res.status(200).json(total);
-        }else{
-          res.status(200).json(doc);
-        }
+        return res.status(200).json({
+          data: doc,
+          sum: getSum(doc),
+          max: Math.max(...doc.map(o => o.Remittance))
+        });
       }
     });
   });
@@ -185,16 +185,11 @@ app.get("/api/remittances/gbc/:gbc", function(req, res) {
       if (err) {
         handleError(res, err.message, "Failed to get monthly data");
       } else {
-        if(req.query.sum === "true"){
-          let total = doc.map((record) => {
-            return record.Remittance;
-          }).reduce((a,b) => {
-            return a + b;
-          }, 0);
-          res.status(200).json(total);
-        }else{
-          res.status(200).json(doc);
-        }
+        return res.status(200).json({
+          data: doc,
+          sum: getSum(doc),
+          max: Math.max(...doc.map(o => o.Remittance))
+        });
       }
     });
   });
