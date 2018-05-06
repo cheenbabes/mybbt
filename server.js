@@ -131,7 +131,11 @@ app.get("/api/remittances", function(req, res) {
     if (err) {
       handleError(res, err.message, "Failed to get remittance.");
     } else {
-      res.status(200).json(docs);
+      return res.status(200).json({
+        data: doc,
+        sum: getSum(doc),
+        max: Math.max(...doc.map(o => o.Remittance))
+      });
     }
   });
 });
@@ -155,7 +159,23 @@ app.get("/api/remittances/year/:year/:temple", function(req, res){
   .find({"Temple": req.params.temple, "Year": parseInt(req.params.year)})
   .toArray(function(err, doc){
     if (err) {
-      handleError(res, err.message, "Failed to get monthly data");
+      handleError(res, err.message, "Failed to get yearly data for temple");
+    } else {
+      return res.status(200).json({
+        data: doc,
+        sum: getSum(doc),
+        max: Math.max(...doc.map(o => o.Remittance))
+      });
+    }
+  });
+});
+
+app.get("/api/remittances/year/:year", function(req, res){
+  db.collection(REMITTANCE_COLLECTION)
+  .find({"Temple": req.params.temple, "Year": parseInt(req.params.year)})
+  .toArray(function(err, doc){
+    if (err) {
+      handleError(res, err.message, "Failed to get yearly data");
     } else {
       return res.status(200).json({
         data: doc,
